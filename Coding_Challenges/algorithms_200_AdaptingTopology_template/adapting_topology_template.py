@@ -16,6 +16,19 @@ graph = {
     8: [4],
 }
 
+dist = [[1000 for i in range(9)] for i in range(9)]
+for i in range(9):
+    dist[i][i] = 0
+for i in range(9):
+    for j in graph[i]:
+        dist[i][j] = 1
+        dist[j][i] = 1
+
+for i in range(9):
+    for j in range(9):
+        for k in range(9):
+            dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+
 
 def n_swaps(cnot):
     """Count the minimum number of swaps needed to create the equivalent CNOT.
@@ -29,7 +42,7 @@ def n_swaps(cnot):
     """
 
     # QHACK #
-
+    return (dist[cnot.wires[0]][cnot.wires[1]] - 1) * 2
     # QHACK #
 
 

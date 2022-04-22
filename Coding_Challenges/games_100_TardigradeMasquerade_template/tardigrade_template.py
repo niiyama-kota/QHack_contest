@@ -26,8 +26,25 @@ def compute_entanglement(theta):
     dev = qml.device("default.qubit", wires=3)
 
     # QHACK #
+    @qml.qnode(dev)
+    def circuit_rho():
+        qml.Hadamard(wires=0)
+        qml.PauliX(wires=1)
+        qml.CNOT(wires=[0, 1])
 
+        qml.CRY(theta, wires=[1, 2])
+        qml.CNOT(wires=[2, 1])
+        return qml.density_matrix(wires=1)
+    @qml.qnode(dev)
+    def circuit_mu():
+        qml.Hadamard(wires=0)
+        qml.PauliX(wires=1)
+        qml.CNOT(wires=[0, 1])
+        return qml.density_matrix(wires=1)
     # QHACK #
+    rho = circuit_rho()
+    mu = circuit_mu()
+    return [second_renyi_entropy(mu), second_renyi_entropy(rho)]
 
 
 if __name__ == "__main__":

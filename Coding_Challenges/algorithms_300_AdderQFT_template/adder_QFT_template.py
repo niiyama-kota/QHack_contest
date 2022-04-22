@@ -16,7 +16,11 @@ def qfunc_adder(m, wires):
     qml.QFT(wires=wires)
 
     # QHACK #
-
+    for i in range(len(wires)):
+        for j in range(len(wires) - i):
+            if m >> (len(wires) - 1 - (i + j)) & 1:
+                phi = np.pi / (2 ** j)
+                qml.PhaseShift(phi, wires=len(wires) - 1 - i)
     # QHACK #
 
     qml.QFT(wires=wires).inv()

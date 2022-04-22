@@ -4,6 +4,8 @@ import sys
 import pennylane as qml
 from pennylane import numpy as np
 
+delta = 1e-10
+
 dev = qml.device("default.qubit", wires=3)
 
 
@@ -20,8 +22,12 @@ def my_finite_diff_grad(params):
 
     gradients = np.zeros([len(params)])
     for i in range(len(params)):
+        param_p = [params[k] for k in range(len(params))]
+        param_m = [params[k] for k in range(len(params))]
+        param_p[i] += delta
+        param_m[i] -= delta
         # QHACK # 
-
+        gradients[i] = (cost(param_p) - cost(param_m)) / (2 * delta)
         # QHACK #
 
     return gradients

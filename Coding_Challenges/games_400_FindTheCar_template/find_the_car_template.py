@@ -22,23 +22,33 @@ def find_the_car(oracle):
     @qml.qnode(dev)
     def circuit1():
         # QHACK #
-
+        oracle()
+        qml.PauliX(wires=1)
+        oracle()
         # QHACK #
         return qml.sample()
 
     @qml.qnode(dev)
     def circuit2():
         # QHACK #
-
+        oracle()
+        qml.PauliX(wires=0)
+        oracle()
         # QHACK #
         return qml.sample()
 
     sol1 = circuit1()
     sol2 = circuit2()
 
+
     # QHACK #
 
     # process sol1 and sol2 to determine which door the car is behind.
+    ans = 0
+    ans += 2 if sol1[2] == 0 else 0
+    ans += 1 if sol2[2] == 0 else 0
+
+    return ans
 
     # QHACK #
 

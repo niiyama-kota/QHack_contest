@@ -18,7 +18,8 @@ def prepare_entangled(alpha, beta):
     """
 
     # QHACK #
-
+    state = np.array([alpha, 0, 0, beta]) / np.sqrt(alpha ** 2 + beta ** 2)
+    qml.QubitStateVector(state, wires=[0, 1])
     # QHACK #
 
 @qml.qnode(dev)
@@ -42,7 +43,15 @@ def chsh_circuit(theta_A0, theta_A1, theta_B0, theta_B1, x, y, alpha, beta):
     prepare_entangled(alpha, beta)
 
     # QHACK #
-
+    if x == 0:
+        qml.RY(2 * theta_A0, wires=0)
+    else:
+        qml.RY(2 * theta_A1, wires=0)
+    
+    if y == 0:
+        qml.RY(2 * theta_B0, wires=1)
+    else:
+        qml.RY(2 * theta_B1, wires=1)
     # QHACK #
 
     return qml.probs(wires=[0, 1])
@@ -61,7 +70,18 @@ def winning_prob(params, alpha, beta):
     """
 
     # QHACK #
-
+    win_prob = 0
+    for x in range(2):
+        for y in range(2):
+            probs = chsh_circuit(params[0], params[1], params[2], params[3], x, y, alpha, beta)
+            if x & y == 1:
+                win_prob += probs[1] / 4
+                win_prob += probs[2] / 4
+            else:
+                win_prob += probs[0] / 4
+                win_prob += probs[3] / 4
+    
+    return win_prob
     # QHACK #
     
 
@@ -78,13 +98,15 @@ def optimize(alpha, beta):
 
     def cost(params):
         """Define a cost function that only depends on params, given alpha and beta fixed"""
+        ret = winning_prob(params, alpha, beta)
+        return -ret
 
     # QHACK #
 
     #Initialize parameters, choose an optimization method and number of steps
-    init_params = 
-    opt =
-    steps =
+    init_params = np.array([0, np.pi / 4, np.pi / 8, -np.pi / 8], requires_grad=True)
+    opt = qml.GradientDescentOptimizer(0.1)
+    steps = 200
 
     # QHACK #
     
@@ -95,10 +117,10 @@ def optimize(alpha, beta):
         # update the circuit parameters 
         # QHACK #
 
-        params = 
+        params = opt.step(cost, params)
 
         # QHACK #
-
+    
     return winning_prob(params, alpha, beta)
 
 

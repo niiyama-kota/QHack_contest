@@ -19,10 +19,12 @@ def oracle_matrix(indices):
     """
 
     # QHACK #
-
+    my_array = [[i == j for j in range(16)] for i in range(16)]
+    for m in indices:
+        my_array[m][m] = -1
     # QHACK #
 
-    return my_array
+    return np.array(my_array)
 
 
 def diffusion_matrix():
@@ -56,11 +58,15 @@ def circuit(indices):
 
     # QHACK #
 
-    target_wires =
+    target_wires = [0, 1, 2, 3]
 
-    estimation_wires =
+    estimation_wires = [4, 5, 6, 7]
 
     # Build your circuit here
+    for i in range(4):
+        qml.Hadamard(wires=[i])
+    
+    QuantumPhaseEstimation(grover_operator(indices), target_wires=target_wires, estimation_wires=estimation_wires)
 
     # QHACK #
 
@@ -77,7 +83,15 @@ def number_of_solutions(indices):
     """
 
     # QHACK #
-
+    probs = circuit(indices)
+    state = 0
+    max_prob = 0
+    for i in range(16):
+        if probs[i] >= max_prob:
+            state = i
+            max_prob = probs[i]
+    theta = state * np.pi / 8
+    return 16 * np.sin(theta / 2) ** 2
     # QHACK #
 
 def relative_error(indices):
@@ -91,8 +105,8 @@ def relative_error(indices):
     """
 
     # QHACK #
-
-    rel_err = 
+    qce = number_of_solutions(indices)
+    rel_err = (qce - len(indices)) / len(indices) * 100
 
     # QHACK #
 

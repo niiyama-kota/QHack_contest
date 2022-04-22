@@ -20,7 +20,7 @@ def is_bomb(angle):
     """
 
     # QHACK #
-
+    qml.RY(2 * angle, wires=0)
     # QHACK #
 
     return qml.sample(qml.PauliZ(0))
@@ -38,7 +38,7 @@ def bomb_tester(angle):
     """
 
     # QHACK #
-
+    qml.RY(2 * angle, wires=0)
     # QHACK #
 
     return qml.sample(qml.PauliZ(0))
@@ -56,7 +56,18 @@ def simulate(angle, n):
     """
 
     # QHACK #
+    suc = 0
+    bomb = 0
+    for _ in range(10000):
+        explode = False
+        for _ in range(n):
+            if is_bomb(angle) == 1:
+                bomb += 1
+                explode = True
+        if not explode and bomb_tester(angle) == 1:
+            suc += 1
 
+    return 1 - suc / (10000 - bomb)
     # QHACK #
 
 
